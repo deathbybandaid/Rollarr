@@ -123,7 +123,7 @@ col_custom = [[sg.Text('Select your files', size=(20, 1), font=("Helvetica", 15)
 
 ]
 
-layout = [[sg.Frame(layout=col_1, title='',border_width=0), sg.Frame(layout=col_custom, title='',border_width=0, visible=False, key='Custom'), sg.Frame(layout=col_month, title='',border_width=0, visible=False, key='Month'), sg.Frame(layout=col_week, title='',border_width=0, visible=False, key='Week'), sg.Frame(layout=col_day, title='',border_width=0, visible=False, key='Day'), sg.Frame(layout=col_holiday, title='',border_width=0, visible=False, key='Holiday')]
+layout = [[sg.Frame(layout=col_1, title='',border_width=0, size=(475,525)), sg.Frame(layout=col_custom, title='',border_width=0, visible=False, key='Custom'), sg.Frame(layout=col_month, title='',border_width=0, visible=False, key='Month'), sg.Frame(layout=col_week, title='',border_width=0, visible=False, key='Week'), sg.Frame(layout=col_day, title='',border_width=0, visible=False, key='Day'), sg.Frame(layout=col_holiday, title='',border_width=0, visible=False, key='Holiday')]
 
      ]
 window = sg.Window('Automated Preroll', layout)
