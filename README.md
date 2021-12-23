@@ -66,7 +66,7 @@ How to get token: https://support.plex.tv/articles/204059436-finding-an-authenti
 
 You can then setup a default pre-roll if you want or leave it blank
 
-To set specific pre-roll fuctions select which type you want (Monthly, Weekly, Daily, Holiday), You will then see more fields on the right
+To set specific pre-roll fuctions select which type you want (Monthly, Weekly, Daily, Holiday Custom), You will then see more fields on the right
 #### *The path to the videos must be reachable by your Plex Server!*
 
 Monthly:
@@ -78,8 +78,11 @@ Weekly:
 Daily:
 ![image](https://user-images.githubusercontent.com/75536101/146993063-d1dc0964-233c-4e11-8099-d5e9555b1497.png)
 
-Holiday (If you want another holiday you can add that by using the weekly function and setting a date):
+Holiday (If you want another holiday you can add that by using the weekly function and setting a date) :
 ![image](https://user-images.githubusercontent.com/75536101/146993137-a99e4e79-0e4f-4348-b72a-6ffa19a370cc.png)
+
+Custom:
+![image](https://user-images.githubusercontent.com/75536101/147268244-abf0f6d2-2fe5-43bd-93ec-d69e982d7425.png)
 
 ### Once you finish setting that up whatever you select in the Schedule section will be what the script will run on
 
