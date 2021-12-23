@@ -15,7 +15,7 @@ For example you can have this setup to apply a standard Pre-roll during regular 
 
 
 ## Installation
-If you are on windows you can download the dist.zip file and run the excecutable. However you will still need to download the PrerollUpdate.py script if you want to have it update automatically in the background
+If you are on windows you can download the dist.zip file and run the excecutable. ~~However you will still need to download the PrerollUpdate.py script if you want to have it update automatically in the background~~ This is now packaged in the dist.zip file
 
 First make sure you have Python installed version 3.7 and above. Next run:
 
