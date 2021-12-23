@@ -18,10 +18,9 @@ import pathlib
 from configparser import *
 
 def update():
-    with open('config.yml', 'r') as file:
-        doc = yaml.load(file, Loader=yaml.SafeLoader)
-        # Opening JSON file
-        f = open(str(doc["Plex"]["Path"]))
+
+
+    f = open(str('data.json'))
 
     data = json.load(f)
 
@@ -115,5 +114,98 @@ def update():
         plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
         plex.settings.save()
         print('Pre-roll updated')
-    # Closing file
+    if data['Freq'][0] == 'Custom':
+        Date = datetime.date.today()
+        Date = Date.strftime("%Y-%m-%d")
+        if data['Start1'] <= Date <= data['End1']:
+            session = requests.Session()
+            session.verify = False
+            requests.packages.urllib3.disable_warnings()
+            plex = PlexServer(data['URL'], data['Token'], session, timeout=None)
+            prerolls = data['Path1']
+            plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
+            plex.settings.save()
+            print('Pre-roll updated')
+        elif data['Start2'] <= Date <= data['End2']:
+            session = requests.Session()
+            session.verify = False
+            requests.packages.urllib3.disable_warnings()
+            plex = PlexServer(data['URL'], data['Token'], session, timeout=None)
+            prerolls = data['Path2']
+            plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
+            plex.settings.save()
+            print('Pre-roll updated')
+        elif data['Start3'] <= Date <= data['End3']:
+            session = requests.Session()
+            session.verify = False
+            requests.packages.urllib3.disable_warnings()
+            plex = PlexServer(data['URL'], data['Token'], session, timeout=None)
+            prerolls = data['Path3']
+            plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
+            plex.settings.save()
+            print('Pre-roll updated')
+        elif data['Start4'] <= Date <= data['End4']:
+            session = requests.Session()
+            session.verify = False
+            requests.packages.urllib3.disable_warnings()
+            plex = PlexServer(data['URL'], data['Token'], session, timeout=None)
+            prerolls = data['Path4']
+            plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
+            plex.settings.save()
+            print('Pre-roll updated')
+        elif data['Start5'] <= Date <= data['End5']:
+            session = requests.Session()
+            session.verify = False
+            requests.packages.urllib3.disable_warnings()
+            plex = PlexServer(data['URL'], data['Token'], session, timeout=None)
+            prerolls = data['Path5']
+            plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
+            plex.settings.save()
+            print('Pre-roll updated')
+        elif data['Start6'] <= Date <= data['End6']:
+            session = requests.Session()
+            session.verify = False
+            requests.packages.urllib3.disable_warnings()
+            plex = PlexServer(data['URL'], data['Token'], session, timeout=None)
+            prerolls = data['Path6']
+            plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
+            plex.settings.save()
+            print('Pre-roll updated')
+        elif data['Start7'] <= Date <= data['End7']:
+            session = requests.Session()
+            session.verify = False
+            requests.packages.urllib3.disable_warnings()
+            plex = PlexServer(data['URL'], data['Token'], session, timeout=None)
+            prerolls = data['Path7']
+            plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
+            plex.settings.save()
+            print('Pre-roll updated')
+        elif data['Start8'] <= Date <= data['End8']:
+            session = requests.Session()
+            session.verify = False
+            requests.packages.urllib3.disable_warnings()
+            plex = PlexServer(data['URL'], data['Token'], session, timeout=None)
+            prerolls = data['Path8']
+            plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
+            plex.settings.save()
+            print('Pre-roll updated')
+        elif data['Start9'] <= Date <= data['End9']:
+            session = requests.Session()
+            session.verify = False
+            requests.packages.urllib3.disable_warnings()
+            plex = PlexServer(data['URL'], data['Token'], session, timeout=None)
+            prerolls = data['Path9']
+            plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
+            plex.settings.save()
+            print('Pre-roll updated')
+        elif data['Start10'] <= Date <= data['End10']:
+            session = requests.Session()
+            session.verify = False
+            requests.packages.urllib3.disable_warnings()
+            plex = PlexServer(data['URL'], data['Token'], session, timeout=None)
+            prerolls = data['Path10']
+            plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
+            plex.settings.save()
+            print('Pre-roll updated')
+# Closing file
     f.close()
