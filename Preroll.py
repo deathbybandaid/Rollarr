@@ -79,7 +79,7 @@ col_day = [[sg.Text('Select your files', size=(20, 1), font=("Helvetica", 15))],
             [sg.Text('Monday', size=(10, 1)), sg.In(default_text=output.get('Mon'),key='Mon'), sg.FilesBrowse()],
             [sg.Text('Tuesday', size=(10, 1)), sg.In(default_text=output.get('Tue'),key='Tue'), sg.FilesBrowse()],
             [sg.Text('Wednesday', size=(10, 1)), sg.In(default_text=output.get('Wed'),key='Wed'), sg.FilesBrowse()],
-            [sg.Text('Thursday', size=(10, 1)), sg.In(default_text=output.get('Thur'),key='Thur'), sg.FilesBrowse()],
+            [sg.Text('Thursday', size=(10, 1)), sg.In(default_text=output.get('Thu'),key='Thur'), sg.FilesBrowse()],
             [sg.Text('Friday', size=(10, 1)), sg.In(default_text=output.get('Fri'),key='Fri'), sg.FilesBrowse()],
             [sg.Text('Saturday', size=(10, 1)), sg.In(default_text=output.get('Sat'),key='Sat'), sg.FilesBrowse()],
             [sg.Text('Sunday', size=(10, 1)), sg.In(default_text=output.get('Sun'),key='Sun'), sg.FilesBrowse()]]
@@ -141,7 +141,7 @@ while True:
 
         with open('data.json', 'w') as outfile:
             json.dump({'URL': values['URL'], 'Token': values['Token'], 'Freq': values['Freq'], 'Jan': values['Jan'], 'Feb': values['Feb'], 'Mar': values['Mar'], 'Apr': values['Apr'], 'May': values['May'], 'Jun': values['Jun'], 'Jul': values['Jul'], 'Aug': values['Aug'], 'Sep': values['Sep'], 'Oct': values['Oct'], 'Nov': values['Nov'], 'Dec': values['Dec'],
-                   'WeekStart': values['WeekStart'], 'WeekEnd': values['WeekEnd'], 'WeekPath': values['WeekPath'], 'Sun': values['Sun'], 'Mon': values['Mon'], 'Tue': values['Tue'], 'Wed': values['Wed'], 'Thur': values['Thur'], 'Fri': values['Fri'], 'Sat': values['Sat'],
+                   'WeekStart': values['WeekStart'], 'WeekEnd': values['WeekEnd'], 'WeekPath': values['WeekPath'], 'Sun': values['Sun'], 'Mon': values['Mon'], 'Tue': values['Tue'], 'Wed': values['Wed'], 'Thu': values['Thur'], 'Fri': values['Fri'], 'Sat': values['Sat'],
                    'Valentines Day': values['Valentines Day'], 'April Fools': values['April Fools'], 'July 4th': values['July 4th'], 'Mardi Gras': values['Mardi Gras'], 'Easter': values['Easter'], 'Halloween': values['Halloween'], 'Thanksgiving': values['Thanksgiving'], 'Christmas': values['Christmas'], 'Valentines Day Enabled': values['Valentines Day Enabled']
                       , 'April Fools Enabled': values['April Fools Enabled'], 'July 4th Enabled': values['July 4th Enabled'], 'Mardi Gras Enabled': values['Mardi Gras Enabled'], 'Easter Enabled': values['Easter Enabled'], 'Halloween Enabled': values['Halloween Enabled'], 'Thanksgiving Enabled': values['Thanksgiving Enabled'], 'Christmas Enabled': values['Christmas Enabled'], 'Default': values['Default']
                        , 'Start1': values['Start1'], 'Start2': values['Start2'], 'Start3': values['Start3'], 'Start4': values['Start4'], 'Start5': values['Start5'], 'Start6': values['Start6'], 'Start7': values['Start7'], 'Start8': values['Start8'], 'Start9': values['Start9'], 'Start10': values['Start10']
@@ -152,7 +152,7 @@ while True:
 
         with open('data.json', 'w') as outfile:
             json.dump({'URL': values['URL'], 'Token': values['Token'], 'Freq': values['Freq'], 'Jan': values['Jan'], 'Feb': values['Feb'], 'Mar': values['Mar'], 'Apr': values['Apr'], 'May': values['May'], 'Jun': values['Jun'], 'Jul': values['Jul'], 'Aug': values['Aug'], 'Sep': values['Sep'], 'Oct': values['Oct'], 'Nov': values['Nov'], 'Dec': values['Dec'],
-                   'WeekStart': values['WeekStart'], 'WeekEnd': values['WeekEnd'], 'WeekPath': values['WeekPath'], 'Sun': values['Sun'], 'Mon': values['Mon'], 'Tue': values['Tue'], 'Wed': values['Wed'], 'Thur': values['Thur'], 'Fri': values['Fri'], 'Sat': values['Sat'],
+                   'WeekStart': values['WeekStart'], 'WeekEnd': values['WeekEnd'], 'WeekPath': values['WeekPath'], 'Sun': values['Sun'], 'Mon': values['Mon'], 'Tue': values['Tue'], 'Wed': values['Wed'], 'Thu': values['Thur'], 'Fri': values['Fri'], 'Sat': values['Sat'],
                    'Valentines Day': values['Valentines Day'], 'April Fools': values['April Fools'], 'July 4th': values['July 4th'], 'Mardi Gras': values['Mardi Gras'], 'Easter': values['Easter'], 'Halloween': values['Halloween'], 'Thanksgiving': values['Thanksgiving'], 'Christmas': values['Christmas'], 'Valentines Day Enabled': values['Valentines Day Enabled']
                       , 'April Fools Enabled': values['April Fools Enabled'], 'July 4th Enabled': values['July 4th Enabled'], 'Mardi Gras Enabled': values['Mardi Gras Enabled'], 'Easter Enabled': values['Easter Enabled'], 'Halloween Enabled': values['Halloween Enabled'], 'Thanksgiving Enabled': values['Thanksgiving Enabled'], 'Christmas Enabled': values['Christmas Enabled'], 'Default': values['Default']
                        , 'Start1': values['Start1'], 'Start2': values['Start2'], 'Start3': values['Start3'], 'Start4': values['Start4'], 'Start5': values['Start5'], 'Start6': values['Start6'], 'Start7': values['Start7'], 'Start8': values['Start8'], 'Start9': values['Start9'], 'Start10': values['Start10']
