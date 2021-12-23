@@ -1,5 +1,5 @@
-# Plex-Automatic-Pre-roll-GUI
-This is the new and improved Plex Automatic Pre-roll script with a GUI! It should be stable but if you find a bug please let me know
+# Automatic-Pre-roll-GUI
+This is the new and improved Automatic Pre-roll script with a GUI for Plex! It should be stable but if you find a bug please let me know
 
 ## What is this?
 This is a python script with GUI that allows you to automate your Plex Server Pre-roll.
