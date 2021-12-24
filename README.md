@@ -25,11 +25,52 @@ pip install -r requirements.txt
 ```
 That will install all the needed packages 
 
-## Step by step instructions by Danny at smarthomepursuits.com
+### Windows Step by step instructions by Danny at smarthomepursuits.com
 
 https://smarthomepursuits.com/how-to-setup-plex-automatic-pre-roll-gui-in-windows/
 
+### Mac OS
+Install Homebrew 
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+Set Path Variable
+```
+export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+```
+Set Path Variable 10.12 and below
+```
+export PATH=/usr/local/bin:/usr/local/sbin:$PATH
+```
+Install Python
+```
+ brew install python
+ ```
+ 
+ Install packages
+```
+pip install -r requirements.txt
+```
 
+Run the script
+
+```
+python <file name with full path>
+```
+
+### Linux
+Check to make sure you have the correct version
+```
+python3 --version
+```
+
+Run the script
+
+```
+python <file name with full path>
+```
+
+ 
 ## Settings
 The config.yml file is created through the script automatically with no user input needed now. All changes are now made through the GUI YAY!
 
