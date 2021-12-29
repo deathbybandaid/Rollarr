@@ -1,5 +1,5 @@
-# Automatic-Pre-roll-GUI
-This is the new and improved Automatic Pre-roll script with a GUI for Plex! It should be stable but if you find a bug please let me know
+# Rollarr
+This is the new and improved Automatic Pre-roll script with a GUI for Plex now called Rollarr! It should be stable but if you find a bug please let me know
 
 ## What is this?
 This is a python script with GUI that allows you to automate your Plex Server Pre-roll.
