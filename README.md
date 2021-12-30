@@ -1,8 +1,10 @@
 # Rollarr
 This is the new and improved Automatic Pre-roll script with a GUI for Plex now called Rollarr! It should be stable but if you find a bug please let me know
 
+## Docker Edition
+
 ## What is this?
-This is a python script with GUI that allows you to automate your Plex Server Pre-roll.
+This is a python script with web GUI that allows you to automate your Plex Server Pre-roll.
 You can find out more about Plex Pre-roll here: https://support.plex.tv/articles/202920803-extras/
 You can specify if you would like your pre-roll updated monthly, weekly, daily, or for specific holidays.
 For example you can have this setup to apply a standard Pre-roll during regular times of the year and then during holidays update the pre-roll automatically!
@@ -15,91 +17,25 @@ For example you can have this setup to apply a standard Pre-roll during regular 
 
 
 ## Installation
-If you are on windows you can download the dist.zip file and run the excecutable. ~~However you will still need to download the PrerollUpdate.py script if you want to have it update automatically in the background~~ This is now packaged in the dist.zip file
 
-First make sure you have Python installed version 3.7 and above. Next run:
-
+Simply install like any other docker
 
 ```
-pip install -r requirements.txt
+docker pull thehumanrobot/rollarr:latest
 ```
-That will install all the needed packages 
-
-### Windows Step by step instructions by Danny at smarthomepursuits.com
-
-https://smarthomepursuits.com/how-to-setup-plex-automatic-pre-roll-gui-in-windows/
-
-### Mac OS
-Install Homebrew 
-```
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-Set Path Variable
-```
-export PATH="/usr/local/opt/python/libexec/bin:$PATH"
-```
-Set Path Variable 10.12 and below
-```
-export PATH=/usr/local/bin:/usr/local/sbin:$PATH
-```
-Install Python
-```
- brew install python
- ```
- 
- Install packages
-```
-pip install -r requirements.txt
-```
-
-Run the script
-
-```
-python <file name with full path>
-```
-
-### Linux
-Check to make sure you have the correct version
-```
-python3 --version
-```
-
-Run the script
-
-```
-python <file name with full path>
-```
-
- 
-## Settings
-The config.yml file is created through the script automatically with no user input needed now. All changes are now made through the GUI YAY!
-
 
 ## Usage
 
 ### Setting Plex Preroll
 
-You need to schedule a job for updating the preroll each day, week, or month depending how you want your pre-rolls updated.
-You will now point this at the PrerollUpdate.py script 
-
-**macOS or Linux:**
-Ex: Monthly
-
-```
-crontab -e
-0 0 * 1-12 * python /path/to/scripts/PrerollUpdate.py 2>&1
-```
-
-**Windows:**
-
-Verify python is added to the PATH environmental variable
-Search for task schedular and open it. Click "Create Basic Task" and enter a name and description. Then set the task to run monthly. Choose "Start a program" then for "Program/script" add the full path of the PrerollUpdate.py script Click "Finish" and you are done!
-
+~~You need to schedule a job for updating the preroll each day, week, or month depending how you want your pre-rolls updated.
+You will now point this at the PrerollUpdate.py script~~ This no longer required for the docker container since I have written some code to ensure the pre-roll is synced ever 60s
 
 ## Running For The First Time
 
 The first time you run it you will see this:
-![image](https://user-images.githubusercontent.com/75536101/146992593-a21866ea-7e3f-428c-8640-df197954819d.png)
+![image](https://user-images.githubusercontent.com/75536101/147721323-21bbc717-bc79-424a-9a51-8e799861cca4.png)
+
 
 Fill in all the fields for your plex IP and Token
 
