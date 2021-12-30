@@ -1,0 +1,9 @@
+version: '3.3'
+services:
+    rollarr:
+        volumes:
+            - '/path-to-store/data.json:/docker/configs/rollarr/data.json'
+            - '/path-to-preroll/preroll:/preroll'
+        ports:
+            - '3100:3100'
+        image: rollarr
