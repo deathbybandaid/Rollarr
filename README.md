@@ -29,7 +29,14 @@ docker pull thehumanrobot/rollarr:latest
 ### Setting Plex Preroll
 
 ~~You need to schedule a job for updating the preroll each day, week, or month depending how you want your pre-rolls updated.
-You will now point this at the PrerollUpdate.py script~~ This no longer required for the docker container since I have written some code to ensure the pre-roll is synced ever 60s
+You will now point this at the PrerollUpdate.py script~~ This is no longer required for the docker container since I have written some code to ensure the pre-roll is synced every 60s
+
+##### Docker Command
+```
+docker run -v /data.json:/docker/configs/rollarr/data.json -p 3100:3100 rollarr 
+```
+/data.json can be changed to anywhere you want to store you data.json file
+ex: /home/media/data.json:/docker/configs/rollarr/data.json
 
 ## Running For The First Time
 Connect to the IP of your docker system on port 3100
