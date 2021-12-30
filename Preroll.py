@@ -1,4 +1,5 @@
-import PySimpleGUI as sg
+import remi.gui as gui
+from remi import start, App
 import webbrowser
 import PrerollUpdate
 from plexapi.server import PlexServer
@@ -22,171 +23,1088 @@ import pathlib
 import datetime
 import json
 
+button_base64 = "data:image/png;base64,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"
 
-button_base64 =b'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'
 
-if exists('data.json'):
-    print('ready')
-else:
-    with open('data.json', 'w') as outfile:
-        json.dump({'URL': ''}, outfile)
+class Rollarr(App):
+    if exists('data.json'):
+        print('ready')
+    else:
+        with open('data.json', 'w') as outfile:
+            json.dump({'URL': ''}, outfile)
 
-with open('data.json') as json_file:
-    output = json.load(json_file)
 
-sg.theme('DarkBlue')
+    def __init__(self, *args):
+        super(Rollarr, self).__init__(*args)
 
-col_1 = [[sg.Text('Automate your Plex Preroll!', size=(30, 1), font=("Helvetica", 25))],
-    [sg.Text('Plex Server URL')],
-    [sg.InputText(output.get('URL'), key='URL')],
-    [sg.Text('Plex Server Token')],
-    [sg.InputText(output.get('Token'), key='Token')],
-    [sg.Text('Schedule')],
-    [sg.Listbox(values=['Monthly','Weekly','Daily', 'Holiday', 'Custom'], size=(20,5), key='Freq', default_values=output.get('Freq'), enable_events = True)],
-    [sg.Text('Default Files')],
-    [sg.In(default_text=output.get('Default'),key='Default'), sg.FilesBrowse()],
-    [sg.Text('')],
-    [sg.Text('')],
-    [sg.Text('')],
-    [sg.Save(), sg.Submit()],
-    [sg.Button('', image_data=button_base64, key='Buy', button_color='Yellow')]]
-col_month = [[sg.Text('Select your files', size=(20, 1), font=("Helvetica", 15))],
-            [sg.Text("Jan : ", size=(5, 1), justification='right'), sg.In(default_text= output.get('Jan') ,key='Jan'), sg.FilesBrowse()],
-            [sg.Text("Feb : ", size=(5, 1) , justification='right'), sg.In(default_text=output.get('Feb'),key='Feb'), sg.FilesBrowse()],
-            [sg.Text("Mar : ", size=(5, 1) , justification='right'), sg.In(default_text=output.get('Mar'),key='Mar'), sg.FilesBrowse()],
-            [sg.Text("Apr : ", size=(5, 1) , justification='right'), sg.In(default_text=output.get('Apr'),key='Apr'), sg.FilesBrowse()],
-            [sg.Text("May : ", size=(5, 1) , justification='right'), sg.In(default_text=output.get('May'),key='May'), sg.FilesBrowse()],
-            [sg.Text("Jun : ", size=(5, 1) , justification='right'), sg.In(default_text=output.get('Jun'),key='Jun'), sg.FilesBrowse()],
-            [sg.Text("Jul : ", size=(5, 1) , justification='right'), sg.In(default_text=output.get('Jul'),key='Jul'), sg.FilesBrowse()],
-            [sg.Text("Aug : ", size=(5, 1) , justification='right'), sg.In(default_text=output.get('Aug'),key='Aug'), sg.FilesBrowse()],
-            [sg.Text("Sep : ", size=(5, 1) , justification='right'), sg.In(default_text=output.get('Sep'),key='Sep'), sg.FilesBrowse()],
-            [sg.Text("Oct : ", size=(5, 1) , justification='right'), sg.In(default_text=output.get('Oct'),key='Oct'), sg.FilesBrowse()],
-            [sg.Text("Nov : ", size=(5, 1) , justification='right'), sg.In(default_text=output.get('Nov'),key='Nov'), sg.FilesBrowse()],
-            [sg.Text("Dec : ", size=(5, 1) , justification='right'), sg.In(default_text=output.get('Dec'),key='Dec'), sg.FilesBrowse()]];
-col_week = [[sg.Text('Select your files', size=(20, 1), font=("Helvetica", 15))],
-          [sg.Text('Start Date', size=(10, 1)), sg.InputText(default_text=output.get('WeekStart'),key='WeekStart',), sg.CalendarButton(button_text="Select", format='%Y-%m-%d')],
-            [sg.Text('End Date', size=(10, 1)), sg.InputText(default_text=output.get('WeekEnd'), key='WeekEnd'), sg.CalendarButton(button_text="Select", format='%Y-%m-%d')],
-            [sg.Text('Path: ', size=(10, 1)), sg.In(default_text=output.get('WeekPath'), key='WeekPath', justification='right'), sg.FilesBrowse()],
-]
+    def main(self):
+        with open('data.json') as json_file:
+            output = json.load(json_file)
+        self.app = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container = gui.VBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container2 = gui.VBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container3 = gui.VBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container4 = gui.VBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container5 = gui.VBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container6 = gui.VBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container6H = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.submission =  gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
 
-col_day = [[sg.Text('Select your files', size=(20, 1), font=("Helvetica", 15))],
-            [sg.Text('Monday', size=(10, 1)), sg.In(default_text=output.get('Mon'),key='Mon'), sg.FilesBrowse()],
-            [sg.Text('Tuesday', size=(10, 1)), sg.In(default_text=output.get('Tue'),key='Tue'), sg.FilesBrowse()],
-            [sg.Text('Wednesday', size=(10, 1)), sg.In(default_text=output.get('Wed'),key='Wed'), sg.FilesBrowse()],
-            [sg.Text('Thursday', size=(10, 1)), sg.In(default_text=output.get('Thu'),key='Thur'), sg.FilesBrowse()],
-            [sg.Text('Friday', size=(10, 1)), sg.In(default_text=output.get('Fri'),key='Fri'), sg.FilesBrowse()],
-            [sg.Text('Saturday', size=(10, 1)), sg.In(default_text=output.get('Sat'),key='Sat'), sg.FilesBrowse()],
-            [sg.Text('Sunday', size=(10, 1)), sg.In(default_text=output.get('Sun'),key='Sun'), sg.FilesBrowse()]]
+        self.app.append(self.container)
+        if output.get('Freq') == 'Monthly':
+            self.app.append(self.container2)
+            self.app.remove_child(self.container3)
+            self.app.remove_child(self.container5)
+            self.app.remove_child(self.container4)
+            self.app.remove_child(self.container6)
+        if output.get('Freq') == 'Weekly':
+            self.app.remove_child(self.container2)
+            self.app.remove_child(self.container4)
+            self.app.remove_child(self.container5)
+            self.app.append(self.container3)
+            self.app.remove_child(self.container6)
+        if output.get('Freq') == 'Daily':
+            self.app.remove_child(self.container2)
+            self.app.append(self.container4)
+            self.app.remove_child(self.container5)
+            self.app.remove_child(self.container3)
+            self.app.remove_child(self.container6)
+        if output.get('Freq') == 'Holiday':
+            self.app.remove_child(self.container2)
+            self.app.remove_child(self.container3)
+            self.app.remove_child(self.container5)
+            self.app.append(self.container6)
+            self.app.remove_child(self.container4)
+        if output.get('Freq') == 'Custom':
+            self.app.remove_child(self.container2)
+            self.app.remove_child(self.container3)
+            self.app.append(self.container5)
+            self.app.remove_child(self.container4)
+            self.app.remove_child(self.container6)
 
-col_holiday = [[sg.Text('Select your files', size=(20, 1), font=("Helvetica", 15))],
-            [sg.Text('Valentines Day', size=(11, 1)), sg.In(default_text=output.get('Valentines Day'),key='Valentines Day'), sg.FilesBrowse(),sg.Checkbox('Enable', key='Valentines Day Enabled', default=output.get('Valentines Day Enabled'))],
-            [sg.Text('April Fools', size=(11, 1)), sg.In(default_text=output.get('April Fools'),key='April Fools'), sg.FilesBrowse(),sg.Checkbox('Enable', key='April Fools Enabled', default=output.get('April Fools Enabled'))],
-            [ sg.Text('July 4th', size=(11, 1)), sg.In(default_text=output.get('July 4th'),key='July 4th'), sg.FilesBrowse(),sg.Checkbox('Enable', key='July 4th Enabled', default=output.get('July 4th Enabled'))],
-               [sg.Text('Mardi Gras', size=(11, 1)), sg.In(default_text=output.get('Mardi Gras'), key='Mardi Gras'),
-                sg.FilesBrowse(),
-                sg.Checkbox('Enable', key='Mardi Gras Enabled', default=output.get('Mardi Gras Enabled'))],
-               [sg.Text('Easter', size=(11, 1)), sg.In(default_text=output.get('Easter'), key='Easter'), sg.FilesBrowse(),
-                sg.Checkbox('Enable', key='Easter Enabled', default=output.get('Easter Enabled'))],
-               [sg.Text('Halloween', size=(11, 1)), sg.In(default_text=output.get('Halloween'), key='Halloween'),
-                sg.FilesBrowse(),
-                sg.Checkbox('Enable', key='Halloween Enabled', default=output.get('Halloween Enabled'))],
-               [sg.Text('Thanksgiving', size=(11, 1)), sg.In(default_text=output.get('Thanksgiving'), key='Thanksgiving'),
-                sg.FilesBrowse(),
-                sg.Checkbox('Enable', key='Thanksgiving Enabled', default=output.get('Thanksgiving Enabled'))],
-               [sg.Text('Christmas', size=(11, 1)), sg.In(default_text=output.get('Christmas'), key='Christmas'),
-                sg.FilesBrowse(),
-                sg.Checkbox('Enable', key='Christmas Enabled', default=output.get('Christmas Enabled'))]]
+        icon = gui.Image("data:image/png;base64,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", height=80, width=80)
 
-col_custom = [[sg.Text('Select your files', size=(20, 1), font=("Helvetica", 15))],
-             [sg.Text('Custom Configuration')],
-             [sg.Text('Playback is determined by order then date')],
-             [sg.Text('1.'), sg.Text('Path: ', size=(5, 1)), sg.In(default_text=output.get('Path1', ''), key='Path1', justification='right'), sg.FilesBrowse()],
-             [sg.Text('Start Date', size=(8, 1)), sg.InputText(default_text=output.get('Start1', ''),key='Start1', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d'), sg.Text('End Date', size=(8, 1)), sg.InputText(default_text=output.get('End1'), key='End1', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d')],
-             [sg.Text('2.'), sg.Text('Path: ', size=(5, 1)), sg.In(default_text=output.get('Path2', ''),key='Path2', justification='right'), sg.FilesBrowse()],
-             [sg.Text('Start Date', size=(8, 1)), sg.InputText(default_text=output.get('Start2'),key='Start2', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d'), sg.Text('End Date', size=(8, 1)), sg.InputText(default_text=output.get('End2'), key='End2', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d')],
-            [sg.Text('3.'), sg.Text('Path: ', size=(5, 1)), sg.In(default_text=output.get('Path3', ''),key='Path3', justification='right'), sg.FilesBrowse()],
-            [sg.Text('Start Date', size=(8, 1)), sg.InputText(default_text=output.get('Start3'),key='Start3', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d'), sg.Text('End Date', size=(8, 1)), sg.InputText(default_text=output.get('End3'), key='End3', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d')],
-            [sg.Text('4.'), sg.Text('Path: ', size=(5, 1)), sg.In(default_text=output.get('Path4', ''),key='Path4', justification='right'), sg.FilesBrowse()],
-            [sg.Text('Start Date', size=(8, 1)), sg.InputText(default_text=output.get('Start4'),key='Start4', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d'), sg.Text('End Date', size=(8, 1)), sg.InputText(default_text=output.get('End4'), key='End4', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d')],
-            [sg.Text('5.'), sg.Text('Path: ', size=(5, 1)), sg.In(default_text=output.get('Path5', ''),key='Path5', justification='right'), sg.FilesBrowse()],
-            [sg.Text('Start Date', size=(8, 1)), sg.InputText(default_text=output.get('Start5'),key='Start5', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d'), sg.Text('End Date', size=(8, 1)), sg.InputText(default_text=output.get('End5'), key='End5', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d')],
-            [sg.Text('6.'), sg.Text('Path: ', size=(5, 1)), sg.In(default_text=output.get('Path6', ''),key='Path6', justification='right'), sg.FilesBrowse()],
-            [sg.Text('Start Date', size=(8, 1)), sg.InputText(default_text=output.get('Start6'),key='Start6', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d'), sg.Text('End Date', size=(8, 1)), sg.InputText(default_text=output.get('End6'), key='End6', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d')],
-            [sg.Text('7.'), sg.Text('Path: ', size=(5, 1)), sg.In(default_text=output.get('Path7', ''),key='Path7', justification='right'), sg.FilesBrowse()],
-            [sg.Text('Start Date', size=(8, 1)), sg.InputText(default_text=output.get('Start7'),key='Start7', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d'), sg.Text('End Date', size=(8, 1)), sg.InputText(default_text=output.get('End7'), key='End7', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d')],
-            [sg.Text('8.'), sg.Text('Path: ', size=(5, 1)), sg.In(default_text=output.get('Path8', ''),key='Path8', justification='right'), sg.FilesBrowse()],
-            [sg.Text('Start Date', size=(8, 1)), sg.InputText(default_text=output.get('Start8'),key='Start8', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d'), sg.Text('End Date', size=(8, 1)), sg.InputText(default_text=output.get('End8'), key='End8', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d')],
-            [sg.Text('9.'), sg.Text('Path: ', size=(5, 1)), sg.In(default_text=output.get('Path9', ''),key='Path9', justification='right'), sg.FilesBrowse()],
-            [sg.Text('Start Date', size=(8, 1)), sg.InputText(default_text=output.get('Start9'),key='Start9', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d'), sg.Text('End Date', size=(8, 1)), sg.InputText(default_text=output.get('End9'), key='End9', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d')],
-            [sg.Text('10.'), sg.Text('Path: ', size=(5, 1)), sg.In(default_text=output.get('Path10', ''), key='Path10', justification='right'), sg.FilesBrowse()],
-            [sg.Text('Start Date', size=(8, 1)), sg.InputText(default_text=output.get('Start10'),key='Start10', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d'), sg.Text('End Date', size=(8, 1)), sg.InputText(default_text=output.get('End10'), key='End10', size=(12,1)), sg.CalendarButton(button_text="Select", format='%Y-%m-%d')],
+        self.container.append(icon)
+        self.title = gui.Label('Rolarr - Automate your Plex Preroll!', size=(20, 1))
+        self.title.css_font_size = "20px"
+        self.container.append(self.title)
+        self.container.append(gui.Label(" ",height=40))
+        self.container.append(gui.Label('Plex Server URL'))
+        self.url = gui.Input(default_value=output.get('URL'), key='URL')
+        self.container.append(self.url)
+        self.container.append(gui.Label('Plex Server Token'))
+        self.Token = gui.Input(default_value=output.get('Token'), key='Token')
+        self.container.append(self.Token)
+        self.container.append(gui.Label('Schedule'))
+        self.dropDown = gui.DropDown(('Select','Monthly', 'Weekly', 'Daily', 'Holiday', 'Custom'),width=200, key='Freq', enable_events=True)
+        self.container.append(self.dropDown)
+        self.dropDown.onchange.do(self.drop_down_changed)
+        self.dropDown.select_by_value(output.get('Freq'))
+        self.container.append(gui.Label('Default Files'))
+        self.default = gui.Input(default_value=output.get('Default'), key='Default', size=(70, 1))
+        self.btFileDiag = gui.Button('Select', width=100, height=20)
+        self.btFileDiag.onclick.do(self.open_fileselection_dialog)
+        self.container.append(self.btFileDiag)
+        self.container.append(self.default)
+        self.container.append(gui.Label(" ", height=40))
+        self.save = gui.Button('Save', width=50, height=20)
+        self.submit = gui.Button('Submit', width=50, height=20)
+        self.submission.append(self.save)
+        self.save.onclick.do(self.savefile)
+        self.submission.append(gui.Label("", width=10))
+        self.submission.append(self.submit)
+        self.container.append(self.submission)
+        self.submit.onclick.do(self.submitfile)
+        self.container.append(gui.Label(" ", height=10))
+        self.buy = gui.Image(button_base64, height=59, width=150)
+        self.container.append(self.buy)
+        self.buy.onclick.do(self.open_link)
 
-]
 
-layout = [[sg.Frame(layout=col_1, title='',border_width=0, size=(475,525)), sg.Frame(layout=col_custom, title='',border_width=0, visible=False, key='Custom'), sg.Frame(layout=col_month, title='',border_width=0, visible=False, key='Month'), sg.Frame(layout=col_week, title='',border_width=0, visible=False, key='Week'), sg.Frame(layout=col_day, title='',border_width=0, visible=False, key='Day'), sg.Frame(layout=col_holiday, title='',border_width=0, visible=False, key='Holiday')]
+        self.container2.append(gui.Label('Select your files', size=(20, 1), font=("Helvetica", 15)))
+        self.container2.append(gui.Label("Jan : ", size=(5, 1)))
+        self.defaultJan = gui.Input(default_value=output.get('Jan'))
+        self.btFileDiag2 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag2.onclick.do(self.open_fileselection_dialogJan)
+        self.container2H = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container2H.append(self.btFileDiag2)
+        self.container2H.append(self.defaultJan)
+        self.container2.append(self.container2H)
+        self.container2.append(gui.Label("Feb : ", size=(5, 1)))
+        self.defaultFeb = gui.Input(default_value=output.get('Feb'))
+        self.btFileDiag3 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag3.onclick.do(self.open_fileselection_dialogFeb)
+        self.container2H2 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container2H2.append(self.btFileDiag3)
+        self.container2H2.append(self.defaultFeb)
+        self.container2.append(self.container2H2)
+        self.container2.append(gui.Label("Mar : ", size=(5, 1)))
+        self.defaultMar = gui.Input(default_value=output.get('Mar'))
+        self.btFileDiag4 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag4.onclick.do(self.open_fileselection_dialogMar)
+        self.container2H3 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container2H3.append(self.btFileDiag4)
+        self.container2H3.append(self.defaultMar)
+        self.container2.append(self.container2H3)
+        self.container2.append(gui.Label("Apr : ", size=(5, 1)))
+        self.defaultApr = gui.Input(default_value=output.get('Apr'))
+        self.btFileDiag5 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag5.onclick.do(self.open_fileselection_dialogApr)
+        self.container2H4 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container2H4.append(self.btFileDiag5)
+        self.container2H4.append(self.defaultApr)
+        self.container2.append(self.container2H4)
+        self.container2.append(gui.Label("May : ", size=(5, 1)))
+        self.defaultMay = gui.Input(default_value=output.get('May'))
+        self.btFileDiag6 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag6.onclick.do(self.open_fileselection_dialogMay)
+        self.container2H5 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container2H5.append(self.btFileDiag6)
+        self.container2H5.append(self.defaultMay)
+        self.container2.append(self.container2H5)
+        self.container2.append(gui.Label("Jun : ", size=(5, 1)))
+        self.defaultJun = gui.Input(default_value=output.get('Jun'))
+        self.btFileDiag7 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag7.onclick.do(self.open_fileselection_dialogJun)
+        self.container2H6 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container2H6.append(self.btFileDiag7)
+        self.container2H6.append(self.defaultJun)
+        self.container2.append(self.container2H6)
+        self.container2.append(gui.Label("Jul : ", size=(5, 1)))
+        self.defaultJul = gui.Input(default_value=output.get('Jul'))
+        self.btFileDiag8 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag8.onclick.do(self.open_fileselection_dialogJul)
+        self.container2H7 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container2H7.append(self.btFileDiag8)
+        self.container2H7.append(self.defaultJul)
+        self.container2.append(self.container2H7)
+        self.container2.append(gui.Label("Aug : ", size=(5, 1)))
+        self.defaultAug= gui.Input(default_value=output.get('Aug'))
+        self.btFileDiag9 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag9.onclick.do(self.open_fileselection_dialogAug)
+        self.container2H8 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container2H8.append(self.btFileDiag9)
+        self.container2H8.append(self.defaultAug)
+        self.container2.append(self.container2H8)
+        self.container2.append(gui.Label("Sep : ", size=(5, 1)))
+        self.defaultSep = gui.Input(default_value=output.get('Sep'))
+        self.btFileDiag10 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag10.onclick.do(self.open_fileselection_dialogSep)
+        self.container2H9 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container2H9.append(self.btFileDiag10)
+        self.container2H9.append(self.defaultSep)
+        self.container2.append(self.container2H9)
+        self.container2.append(gui.Label("Oct : ", size=(5, 1)))
+        self.defaultOct = gui.Input(default_value=output.get('Oct'))
+        self.btFileDiag11 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag11.onclick.do(self.open_fileselection_dialogOct)
+        self.container2H10 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container2H10.append(self.btFileDiag11)
+        self.container2H10.append(self.defaultOct)
+        self.container2.append(self.container2H10)
+        self.container2.append(gui.Label("Nov : ", size=(5, 1)))
+        self.defaultNov = gui.Input(default_value=output.get('Nov'))
+        self.btFileDiag12 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag12.onclick.do(self.open_fileselection_dialogNov)
+        self.container2H11 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container2H11.append(self.btFileDiag12)
+        self.container2H11.append(self.defaultNov)
+        self.container2.append(self.container2H11)
+        self.container2.append(gui.Label("Dec : ", size=(5, 1)))
+        self.defaultDec = gui.Input(default_value=output.get('Dec'))
+        self.btFileDiag13 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag13.onclick.do(self.open_fileselection_dialogDec)
+        self.container2H12 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container2H12.append(self.btFileDiag13)
+        self.container2H12.append(self.defaultDec)
+        self.container2.append(self.container2H12)
 
-     ]
-window = sg.Window('Automated Preroll', layout)
-while True:
-    event, values = window.read()
-    if event == 'Buy':
+        self.container3.append(gui.Label('Select your files', size=(20, 1), font=("Helvetica", 15)))
+        self.container3.append(gui.Label('Start Date', size=(10, 1)))
+        self.weekstart = gui.Date(button_Label="Select", format='%Y-%m-%d', default_value=output.get('WeekStart'))
+        self.container3.append(self.weekstart)
+        self.container3.append(gui.Label('End Date', size=(10, 1)))
+        self.weekend = gui.Date(button_Label="Select", format='%Y-%m-%d', default_value=output.get('WeekEnd'))
+        self.container3.append(self.weekend)
+        self.container3.append(gui.Label('Path: ', size=(10, 1)))
+        self.WeekPath = gui.Input(default_value=output.get('WeekPath'))
+        self.btFileDiag14 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag14.onclick.do(self.open_fileselection_dialogPath)
+        self.container3.append(self.btFileDiag14)
+        self.container3.append(self.WeekPath)
+
+
+        self.container4.append(gui.Label('Select your files', size=(20, 1), font=("Helvetica", 15)))
+        self.container4.append(gui.Label('Monday', size=(7, 1)))
+        self.Mon = gui.Input(default_value=output.get('Mon'))
+        self.btFileDiag15 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag15.onclick.do(self.open_fileselection_dialogMon)
+        self.container4H = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container4H.append(self.btFileDiag15)
+        self.container4H.append(self.Mon)
+        self.container4.append(self.container4H)
+        self.container4.append(gui.Label('Tuesday', size=(7, 1)))
+        self.Tue = gui.Input(default_value=output.get('Tue'), key='Tue')
+        self.btFileDiag16 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag16.onclick.do(self.open_fileselection_dialogTue)
+        self.container4H2 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container4H2.append(self.btFileDiag16)
+        self.container4H2.append(self.Tue)
+        self.container4.append(self.container4H2)
+        self.container4.append(gui.Label('Wednesday', size=(7, 1)))
+        self.Wed = gui.Input(default_value=output.get('Wed'), key='Wed')
+        self.btFileDiag17 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag17.onclick.do(self.open_fileselection_dialogWed)
+        self.container4H3 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container4H3.append(self.btFileDiag17)
+        self.container4H3.append(self.Wed)
+        self.container4.append(self.container4H3)
+        self.container4.append(gui.Label('Thursday', size=(7, 1)))
+        self.Thu = gui.Input(default_value=output.get('Thu'), key='Thu')
+        self.btFileDiag18 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag18.onclick.do(self.open_fileselection_dialogThu)
+        self.container4H4 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container4H4.append(self.btFileDiag18)
+        self.container4H4.append(self.Thu)
+        self.container4.append(self.container4H4)
+        self.container4.append(gui.Label('Friday', size=(7, 1)))
+        self.Fri = gui.Input(default_value=output.get('Fri'), key='Fri')
+        self.btFileDiag19 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag19.onclick.do(self.open_fileselection_dialogFri)
+        self.container4H5 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container4H5.append(self.btFileDiag19)
+        self.container4H5.append(self.Fri)
+        self.container4.append(self.container4H5)
+        self.container4.append(gui.Label('Sat', size=(7, 1)))
+        self.Sat = gui.Input(default_value=output.get('Sat'), key='Sat')
+        self.btFileDiag20 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag20.onclick.do(self.open_fileselection_dialogSat)
+        self.container4H6 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container4H6.append(self.btFileDiag20)
+        self.container4H6.append(self.Sat)
+        self.container4.append(self.container4H6)
+        self.container4.append(gui.Label('Sunday', size=(7, 1)))
+        self.Sun = gui.Input(default_value=output.get('Sun'), key='Sun')
+        self.btFileDiag21 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag21.onclick.do(self.open_fileselection_dialogSun)
+        self.container4H7 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container4H7.append(self.btFileDiag21)
+        self.container4H7.append(self.Sun)
+        self.container4.append(self.container4H7)
+
+        self.container5.append(gui.Label('Select your files', size=(20, 1), font=("Helvetica", 15)))
+        self.container5.append(gui.Label('Custom Configuration'))
+        self.container5.append(gui.Label('Playback is determined by order then date'))
+        self.container5.append(gui.Label('1. Path: ', size=(8, 1)))
+        self.Path1 = gui.Input(default_value=output.get('Path1'))
+        self.btFileDiag22 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag22.onclick.do(self.open_fileselection_dialogPath1)
+        self.container5H = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container5H.append(self.btFileDiag22)
+        self.container5H.append(self.Path1)
+        self.container5.append(self.container5H)
+        self.container5.append(gui.Label('Start Date', size=(8, 1)))
+        self.Start = gui.Date(button_Label="Select Start", format='%Y-%m-%d', default_value=output.get('Start1'))
+        self.container5.append(self.Start)
+        self.container5.append(gui.Label('End Date', size=(8, 1)))
+        self.End1 = gui.Date(button_Label="Select End", format='%Y-%m-%d', default_value=output.get('End1'))
+        self.container5.append(self.End1)
+        self.container5.append(gui.Label('2. Path: ', size=(8, 1)))
+        self.Path2 = gui.Input(default_value=output.get('Path2'))
+        self.btFileDiag23 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag22.onclick.do(self.open_fileselection_dialogPath2)
+        self.container5H2 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container5H2.append(self.btFileDiag23)
+        self.container5H2.append(self.Path2)
+        self.container5.append(self.container5H2)
+        self.container5.append(gui.Label('Start Date', size=(8, 1)))
+        self.Start2 = gui.Date(button_Label="Select Start", format='%Y-%m-%d', default_value=output.get('Start2'))
+        self.container5.append(self.Start2)
+        self.container5.append(gui.Label('End Date', size=(8, 1)))
+        self.End2 = gui.Date(button_Label="Select End", format='%Y-%m-%d', default_value=output.get('End2'))
+        self.container5.append(self.End2)
+        self.container5.append(gui.Label('3. Path: ', size=(8, 1)))
+        self.Path3 = gui.Input(default_value=output.get('Path3'))
+        self.btFileDiag24 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag24.onclick.do(self.open_fileselection_dialogPath3)
+        self.container5H3 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container5H3.append(self.btFileDiag24)
+        self.container5H3.append(self.Path3)
+        self.container5.append(self.container5H3)
+        self.container5.append(gui.Label('Start Date', size=(8, 1)))
+        self.Start3 = gui.Date(button_Label="Select Start", format='%Y-%m-%d', default_value=output.get('Start3'))
+        self.container5.append(self.Start3)
+        self.container5.append(gui.Label('End Date', size=(8, 1)))
+        self.End3 = gui.Date(button_Label="Select End", format='%Y-%m-%d', default_value=output.get('End3'))
+        self.container5.append(self.End3)
+        self.container5.append(gui.Label('4. Path: ', size=(8, 1)))
+        self.Path4 = gui.Input(default_value=output.get('Path1'))
+        self.btFileDiag25 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag25.onclick.do(self.open_fileselection_dialogPath4)
+        self.container5H4 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container5H4.append(self.btFileDiag25)
+        self.container5H4.append(self.Path4)
+        self.container5.append(self.container5H4)
+        self.container5.append(gui.Label('Start Date', size=(8, 1)))
+        self.Start4 = gui.Date(button_Label="Select Start", format='%Y-%m-%d', default_value=output.get('Start4'))
+        self.container5.append(self.Start4)
+        self.container5.append(gui.Label('End Date', size=(8, 1)))
+        self.End4 = gui.Date(button_Label="Select End", format='%Y-%m-%d', default_value=output.get('End4'))
+        self.container5.append(self.End4)
+        self.container5.append(gui.Label('5. Path: ', size=(8, 1)))
+        self.Path5 = gui.Input(default_value=output.get('Path1'))
+        self.btFileDiag26 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag26.onclick.do(self.open_fileselection_dialogPath5)
+        self.container5H5 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container5H5.append(self.btFileDiag26)
+        self.container5H5.append(self.Path5)
+        self.container5.append(self.container5H5)
+        self.container5.append(gui.Label('Start Date', size=(8, 1)))
+        self.Start5 = gui.Date(button_Label="Select Start", format='%Y-%m-%d', default_value=output.get('Start5'))
+        self.container5.append(self.Start5)
+        self.container5.append(gui.Label('End Date', size=(8, 1)))
+        self.End5 = gui.Date(button_Label="Select End", format='%Y-%m-%d', default_value=output.get('End5'))
+        self.container5.append(self.End5)
+        self.container5.append(gui.Label('6. Path: ', size=(8, 1)))
+        self.Path6 = gui.Input(default_value=output.get('Path1'))
+        self.btFileDiag27 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag27.onclick.do(self.open_fileselection_dialogPath6)
+        self.container5H6 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container5H6.append(self.btFileDiag27)
+        self.container5H6.append(self.Path6)
+        self.container5.append(self.container5H6)
+        self.container5.append(gui.Label('Start Date', size=(8, 1)))
+        self.Start6 = gui.Date(button_Label="Select Start", format='%Y-%m-%d', default_value=output.get('Start6'))
+        self.container5.append(self.Start6)
+        self.container5.append(gui.Label('End Date', size=(8, 1)))
+        self.End6 = gui.Date(button_Label="Select End", format='%Y-%m-%d', default_value=output.get('End6'))
+        self.container5.append(self.End6)
+        self.container5.append(gui.Label('7. Path: ', size=(8, 1)))
+        self.Path7 = gui.Input(default_value=output.get('Path1'))
+        self.btFileDiag28 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag28.onclick.do(self.open_fileselection_dialogPath7)
+        self.container5H7 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container5H7.append(self.btFileDiag28)
+        self.container5H7.append(self.Path7)
+        self.container5.append(self.container5H7)
+        self.container5.append(gui.Label('Start Date', size=(8, 1)))
+        self.Start7 = gui.Date(button_Label="Select Start", format='%Y-%m-%d', default_value=output.get('Start7'))
+        self.container5.append(self.Start7)
+        self.container5.append(gui.Label('End Date', size=(8, 1)))
+        self.End7 = gui.Date(button_Label="Select End", format='%Y-%m-%d', default_value=output.get('End7'))
+        self.container5.append(self.End7)
+        self.container5.append(gui.Label('8. Path: ', size=(8, 1)))
+        self.Path8 = gui.Input(default_value=output.get('Path8'))
+        self.btFileDiag29 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag29.onclick.do(self.open_fileselection_dialogPath8)
+        self.container5H8 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container5H8.append(self.btFileDiag29)
+        self.container5H8.append(self.Path8)
+        self.container5.append(self.container5H8)
+        self.container5.append(gui.Label('Start Date', size=(8, 1)))
+        self.Start8 = gui.Date(button_Label="Select Start", format='%Y-%m-%d', default_value=output.get('Start8'))
+        self.container5.append(self.Start8)
+        self.container5.append(gui.Label('End Date', size=(8, 1)))
+        self.End8 = gui.Date(button_Label="Select End", format='%Y-%m-%d', default_value=output.get('End8'))
+        self.container5.append(self.End8)
+        self.container5.append(gui.Label('9. Path: ', size=(8, 1)))
+        self.Path9 = gui.Input(default_value=output.get('Path9'))
+        self.btFileDiag30 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag30.onclick.do(self.open_fileselection_dialogPath9)
+        self.container5H9 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container5H9.append(self.btFileDiag30)
+        self.container5H9.append(self.Path9)
+        self.container5.append(self.container5H9)
+        self.container5.append(gui.Label('Start Date', size=(8, 1)))
+        self.Start9 = gui.Date(button_Label="Select Start", format='%Y-%m-%d', default_value=output.get('Start9'))
+        self.container5.append(self.Start9)
+        self.container5.append(gui.Label('End Date', size=(8, 1)))
+        self.End9 = gui.Date(button_Label="Select End", format='%Y-%m-%d', default_value=output.get('End9'))
+        self.container5.append(self.End9)
+        self.container5.append(gui.Label('10. Path: ', size=(8, 1)))
+        self.Path10 = gui.Input(default_value=output.get('Path10'))
+        self.btFileDiag31 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag31.onclick.do(self.open_fileselection_dialogPath10)
+        self.container5H10 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container5H10.append(self.btFileDiag31)
+        self.container5H10.append(self.Path10)
+        self.container5.append(self.container5H10)
+        self.container5.append(gui.Label('Start Date', size=(8, 1)))
+        self.Start10 = gui.Date(button_Label="Select Start", format='%Y-%m-%d', default_value=output.get('Start10'))
+        self.container5.append(self.Start10)
+        self.container5.append(gui.Label('End Date', size=(8, 1)))
+        self.End10 = gui.Date(button_Label="Select End", format='%Y-%m-%d', default_value=output.get('End10'))
+        self.container5.append(self.End10)
+
+        self.container6.append(gui.Label('Select your files', size=(20, 1), font=("Helvetica", 15)))
+        self.container6.append(gui.Label('Valentines Day: ', size=(11, 1)))
+        self.Pathvday = gui.Input(default_value=output.get('Valentines Day'))
+        self.checkboxvday = gui.CheckBox(checked=output.get('Valentines Day Enabled'))
+        self.btFileDiag32 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag32.onclick.do(self.open_fileselection_dialogPathvday)
+        self.container6H.append(self.btFileDiag32)
+        self.container6H.append(self.Pathvday)
+        self.container6H.append(self.checkboxvday)
+        self.container6.append(self.container6H)
+        self.container6.append(gui.Label('April Fools: ', size=(11, 1)))
+        self.Pathaprilday = gui.Input(default_value=output.get('April Fools'))
+        self.checkboxaprilday = gui.CheckBox(checked=output.get('April Fools Enabled'))
+        self.btFileDiag33 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag33.onclick.do(self.open_fileselection_dialogPathaprilday)
+        self.container6H2 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container6H2.append(self.btFileDiag33)
+        self.container6H2.append(self.Pathaprilday)
+        self.container6H2.append(self.checkboxaprilday)
+        self.container6.append(self.container6H2)
+        self.container6.append(gui.Label('July 4th: ', size=(11, 1)))
+        self.Path4th = gui.Input(default_value=output.get('July 4th'))
+        self.checkbox4th = gui.CheckBox(checked=output.get('July 4th Enabled'))
+        self.btFileDiag34= gui.Button('Select', width=100, height=20)
+        self.btFileDiag34.onclick.do(self.open_fileselection_dialogPath4th)
+        self.container6H3 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container6H3.append(self.btFileDiag34)
+        self.container6H3.append(self.Path4th)
+        self.container6H3.append(self.checkbox4th)
+        self.container6.append(self.container6H3)
+        self.container6.append(gui.Label('Mardi Gras: ', size=(11, 1)))
+        self.Pathmardigras = gui.Input(default_value=output.get('Mardi Gras'))
+        self.checkboxmardigras = gui.CheckBox(checked=output.get('Mardi Gras Enabled'))
+        self.btFileDiag35= gui.Button('Select', width=100, height=20)
+        self.btFileDiag35.onclick.do(self.open_fileselection_dialogPathmardigras)
+        self.container6H4 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container6H4.append(self.btFileDiag35)
+        self.container6H4.append(self.Pathmardigras)
+        self.container6H4.append(self.checkboxmardigras)
+        self.container6.append(self.container6H4)
+        self.container6.append(gui.Label('Easter: ', size=(11, 1)))
+        self.Patheaster = gui.Input(default_value=output.get('Easter'))
+        self.checkboxeaster = gui.CheckBox(checked=output.get('Easter Enabled'))
+        self.btFileDiag36 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag36.onclick.do(self.open_fileselection_dialogPatheaster)
+        self.container6H5 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container6H5.append(self.btFileDiag36)
+        self.container6H5.append(self.Patheaster)
+        self.container6H5.append(self.checkboxeaster)
+        self.container6.append(self.container6H5)
+        self.container6.append(gui.Label('Halloween: ', size=(11, 1)))
+        self.Pathhalloween = gui.Input(default_value=output.get('Halloween'))
+        self.checkboxhalloween = gui.CheckBox(checked=output.get('Halloween Enabled'))
+        self.btFileDiag37 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag37.onclick.do(self.open_fileselection_dialogPathhalloween)
+        self.container6H6 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container6H6.append(self.btFileDiag37)
+        self.container6H6.append(self.Pathhalloween)
+        self.container6H6.append(self.checkboxhalloween)
+        self.container6.append(self.container6H6)
+        self.container6.append(gui.Label('Thanksgiving: ', size=(11, 1)))
+        self.PathThanksgiving = gui.Input(default_value=output.get('Thanksgiving'))
+        self.checkboxThanksgiving = gui.CheckBox(checked=output.get('Thanksgiving Enabled'))
+        self.btFileDiag38 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag38.onclick.do(self.open_fileselection_dialogPathThanksgiving)
+        self.container6H7 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container6H7.append(self.btFileDiag38)
+        self.container6H7.append(self.PathThanksgiving)
+        self.container6H7.append(self.checkboxThanksgiving)
+        self.container6.append(self.container6H7)
+        self.container6.append(gui.Label('Christmas: ', size=(11, 1)))
+        self.PathChristmas = gui.Input(default_value=output.get('Christmas'))
+        self.checkboxChristmas = gui.CheckBox(checked=output.get('Christmas Enabled'))
+        self.btFileDiag39 = gui.Button('Select', width=100, height=20)
+        self.btFileDiag39.onclick.do(self.open_fileselection_dialogPathChristmas)
+        self.container6H8 = gui.HBox(margin='0px auto', style={'display': 'block', 'overflow': 'hidden'})
+        self.container6H8.append(self.btFileDiag39)
+        self.container6H8.append(self.PathChristmas)
+        self.container6H8.append(self.checkboxChristmas)
+        self.container6.append(self.container6H8)
+
+
+
+        # returning the root widget
+        return self.app
+
+
+    def open_fileselection_dialog(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders', True,
+                                                           '.')
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirm)
+
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirm(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.default.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogJan(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders', True,
+                                                           '.')
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmJan)
+
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+
+    def on_fileselection_dialog_confirmJan(self, widget, filelist):
+         # a list() of filenames and folders is returned
+        self.defaultJan.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogFeb(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',True,'.',True,False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmFeb)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmFeb(self, widget, filelist):
+         # a list() of filenames and folders is returned
+        self.defaultFeb.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogMar(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmMar)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+    def on_fileselection_dialog_confirmMar(self, widget, filelist):
+         # a list() of filenames and folders is returned
+        self.defaultMar.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogApr(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmApr)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+    def on_fileselection_dialog_confirmApr(self, widget, filelist):
+         # a list() of filenames and folders is returned
+        self.defaultApr.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogMay(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmMay)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+    def on_fileselection_dialog_confirmMay(self, widget, filelist):
+         # a list() of filenames and folders is returned
+        self.defaultMay.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogJun(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmJun)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmJun(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.defaultJun.set_value(';'.join(filelist))
+    def open_fileselection_dialogJul(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmJul)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+    def on_fileselection_dialog_confirmJul(self, widget, filelist):
+         # a list() of filenames and folders is returned
+        self.defaultJul.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogAug(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmAug)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+    def on_fileselection_dialog_confirmAug(self, widget, filelist):
+         # a list() of filenames and folders is returned
+        self.defaultAug.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogSep(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmSep)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+    def on_fileselection_dialog_confirmSep(self, widget, filelist):
+         # a list() of filenames and folders is returned
+        self.defaultSep.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogOct(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmOct)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+    def on_fileselection_dialog_confirmOct(self, widget, filelist):
+         # a list() of filenames and folders is returned
+        self.defaultOct.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogNov(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmNov)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+    def on_fileselection_dialog_confirmNov(self, widget, filelist):
+         # a list() of filenames and folders is returned
+        self.defaultNov.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogDec(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmDec)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmDec(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.defaultDec.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPath(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPath)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPath(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.WeekPath.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPath(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPath)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPath(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.WeekPath.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPath1(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPath1)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPath1(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Path1.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPath2(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPath2)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPath2(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Path2.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPath3(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPath3)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPath3(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Path3.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPath4(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPath4)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPath4(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Path4.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPath5(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPath5)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPath5(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Path5.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPath6(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPath6)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPath6(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Path6.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPath7(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPath7)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPath7(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Path7.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPath8(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPath8)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPath8(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Path8.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPath9(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPath9)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPath9(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Path9.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPath10(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPath10)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPath10(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.WeekPath.set_value(';'.join(filelist))
+
+
+    def open_fileselection_dialogMon(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+        self.on_fileselection_dialog_confirmMon)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmMon(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Mon.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogTue(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmTue)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmTue(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Tue.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogWed(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmWed)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmWed(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Wed.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogThu(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmThu)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmThu(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Thu.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogFri(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmFri)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmFri(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Fri.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogSat(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmSat)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmSat(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Sat.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogSun(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmSun)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmSun(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Sun.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPathvday(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmvday)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmvday(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Pathvday.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPathaprilday(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmaprilday)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmaprilday(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Pathaprilday.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPath4th(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPath4th)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPath4th(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Path4th.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPathmardigras(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPathmardigras)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPathmardigras(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Pathmardigras.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPatheaster(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPatheaster)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPatheaster(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Patheaster.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPathhalloween(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPathhalloween)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPathhalloween(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.Pathhalloween.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPathThanksgiving(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPathThanksgiving)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPathThanksgiving(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.PathThanksgiving.set_value(';'.join(filelist))
+
+    def open_fileselection_dialogPathChristmas(self, widget):
+        self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
+                                                               True, '.', True, False)
+        self.fileselectionDialog.confirm_value.do(
+            self.on_fileselection_dialog_confirmPathChristmas)
+        # here is returned the Input Dialog widget, and it will be shown
+        self.fileselectionDialog.show(self)
+
+    def on_fileselection_dialog_confirmPathChristmas(self, widget, filelist):
+        # a list() of filenames and folders is returned
+        self.PathChristmas.set_value(';'.join(filelist))
+
+
+        #change pre-roll types
+    def drop_down_changed(self, widget, value):
+        print(value)
+        if value == 'Monthly':
+            self.app.append(self.container2)
+            self.app.remove_child(self.container3)
+            self.app.remove_child(self.container5)
+            self.app.remove_child(self.container4)
+            self.app.remove_child(self.container6)
+        if value == 'Weekly':
+            self.app.remove_child(self.container2)
+            self.app.remove_child(self.container4)
+            self.app.remove_child(self.container5)
+            self.app.append(self.container3)
+            self.app.remove_child(self.container6)
+        if value == 'Daily':
+            self.app.remove_child(self.container2)
+            self.app.append(self.container4)
+            self.app.remove_child(self.container5)
+            self.app.remove_child(self.container3)
+            self.app.remove_child(self.container6)
+        if value == 'Holiday':
+            self.app.remove_child(self.container2)
+            self.app.remove_child(self.container3)
+            self.app.remove_child(self.container5)
+            self.app.append(self.container6)
+            self.app.remove_child(self.container4)
+        if value == 'Custom':
+            self.app.remove_child(self.container2)
+            self.app.remove_child(self.container3)
+            self.app.append(self.container5)
+            self.app.remove_child(self.container4)
+            self.app.remove_child(self.container6)
+
+    def open_link(self, widget):
         webbrowser.open_new('https://www.buymeacoffee.com/thehumanrobot')
-    if event == 'Save':
 
+    def savefile(self,widget):
         with open('data.json', 'w') as outfile:
-            json.dump({'URL': values['URL'], 'Token': values['Token'], 'Freq': values['Freq'], 'Jan': values['Jan'], 'Feb': values['Feb'], 'Mar': values['Mar'], 'Apr': values['Apr'], 'May': values['May'], 'Jun': values['Jun'], 'Jul': values['Jul'], 'Aug': values['Aug'], 'Sep': values['Sep'], 'Oct': values['Oct'], 'Nov': values['Nov'], 'Dec': values['Dec'],
-                   'WeekStart': values['WeekStart'], 'WeekEnd': values['WeekEnd'], 'WeekPath': values['WeekPath'], 'Sun': values['Sun'], 'Mon': values['Mon'], 'Tue': values['Tue'], 'Wed': values['Wed'], 'Thu': values['Thur'], 'Fri': values['Fri'], 'Sat': values['Sat'],
-                   'Valentines Day': values['Valentines Day'], 'April Fools': values['April Fools'], 'July 4th': values['July 4th'], 'Mardi Gras': values['Mardi Gras'], 'Easter': values['Easter'], 'Halloween': values['Halloween'], 'Thanksgiving': values['Thanksgiving'], 'Christmas': values['Christmas'], 'Valentines Day Enabled': values['Valentines Day Enabled']
-                      , 'April Fools Enabled': values['April Fools Enabled'], 'July 4th Enabled': values['July 4th Enabled'], 'Mardi Gras Enabled': values['Mardi Gras Enabled'], 'Easter Enabled': values['Easter Enabled'], 'Halloween Enabled': values['Halloween Enabled'], 'Thanksgiving Enabled': values['Thanksgiving Enabled'], 'Christmas Enabled': values['Christmas Enabled'], 'Default': values['Default']
-                       , 'Start1': values['Start1'], 'Start2': values['Start2'], 'Start3': values['Start3'], 'Start4': values['Start4'], 'Start5': values['Start5'], 'Start6': values['Start6'], 'Start7': values['Start7'], 'Start8': values['Start8'], 'Start9': values['Start9'], 'Start10': values['Start10']
-                       , 'End1': values['Start1'], 'End2': values['End2'], 'End3': values['End3'], 'End4': values['End4'], 'End5': values['End5'], 'End6': values['End6'], 'End7': values['End7'], 'End8': values['End8'], 'End9': values['End9'], 'End10': values['End10']
-                       , 'Path1': values['Path1'], 'Path2': values['Path2'], 'Path3': values['Path3'], 'Path4': values['Path4'], 'Path5': values['Path5'], 'Path6': values['Path6'], 'Path7': values['Path7'], 'Path8': values['Path8'], 'Path9': values['Path9'], 'Path10': values['Path10']}, outfile)
-        sg.popup('Your changes are saved')
-    if event == 'Submit':
+            json.dump({'URL': self.url.get_value(), 'Token': self.Token.get_value(), 'Freq': self.dropDown.get_value(), 'Jan': self.defaultJan.get_value(),
+                       'Feb': self.defaultFeb.get_value(), 'Mar': self.defaultMar.get_value(), 'Apr': self.defaultApr.get_value(), 'May': self.defaultMay.get_value(),
+                       'Jun': self.defaultJun.get_value(), 'Jul': self.defaultJul.get_value(), 'Aug': self.defaultAug.get_value(), 'Sep': self.defaultSep.get_value(),
+                       'Oct': self.defaultOct.get_value(), 'Nov': self.defaultNov.get_value(), 'Dec': self.defaultDec.get_value(),
+                       'WeekStart': self.weekstart.get_value(), 'WeekEnd': self.weekend.get_value(), 'WeekPath': self.WeekPath.get_value(),
+                       'Sun': self.Sun.get_value(), 'Mon': self.Mon.get_value(), 'Tue': self.Tue.get_value(), 'Wed': self.Wed.get_value(),
+                       'Thu': self.Thu.get_value(), 'Fri': self.Fri.get_value(), 'Sat': self.Sat.get_value(),
+                       'Valentines Day': self.Pathvday.get_value(), 'April Fools': self.Pathaprilday.get_value(),
+                       'July 4th': self.Path4th.get_value(), 'Mardi Gras': self.Pathmardigras.get_value(), 'Easter': self.Patheaster.get_value(),
+                       'Halloween': self.Pathhalloween.get_value(), 'Thanksgiving': self.PathThanksgiving.get_value(),
+                       'Christmas': self.PathChristmas.get_value(), 'Valentines Day Enabled': self.checkboxvday.get_value()
+                          , 'April Fools Enabled': self.checkboxaprilday.get_value(),
+                       'July 4th Enabled': self.checkbox4th.get_value(),
+                       'Mardi Gras Enabled': self.checkboxmardigras.get_value(), 'Easter Enabled': self.checkboxeaster.get_value(),
+                       'Halloween Enabled': self.checkboxhalloween.get_value(),
+                       'Thanksgiving Enabled': self.checkboxThanksgiving.get_value(),
+                       'Christmas Enabled': self.checkboxChristmas.get_value(), 'Default': self.default.get_value()
+                          , 'Start1': self.Start.get_value(), 'Start2': self.Start2.get_value(), 'Start3': self.Start3.get_value(),
+                       'Start4': self.Start4.get_value(), 'Start5': self.Start5.get_value(), 'Start6': self.Start6.get_value(),
+                       'Start7': self.Start7.get_value(), 'Start8': self.Start8.get_value(), 'Start9': self.Start9.get_value(),
+                       'Start10': self.Start10.get_value()
+                          , 'End1': self.End1.get_value(), 'End2': self.End2.get_value(), 'End3': self.End3.get_value(),
+                       'End4': self.End4.get_value(), 'End5': self.End5.get_value(), 'End6': self.End6.get_value(), 'End7': self.End7.get_value(),
+                       'End8': self.End8.get_value(), 'End9': self.End9.get_value(), 'End10': self.End10.get_value()
+                          , 'Path1': self.Path1.get_value(), 'Path2': self.Path2.get_value(), 'Path3': self.Path3.get_value(),
+                       'Path4': self.Path4.get_value(), 'Path5': self.Path5.get_value(), 'Path6': self.Path6.get_value(),
+                       'Path7': self.Path7.get_value(), 'Path8': self.Path8.get_value(), 'Path9': self.Path9.get_value(),
+                       'Path10': self.Path10.get_value()}, outfile)
+        self.popup = gui.GenericDialog("Your changes are saved")
+        self.popup.show(self)
 
+    def submitfile(self,widget):
         with open('data.json', 'w') as outfile:
-            json.dump({'URL': values['URL'], 'Token': values['Token'], 'Freq': values['Freq'], 'Jan': values['Jan'], 'Feb': values['Feb'], 'Mar': values['Mar'], 'Apr': values['Apr'], 'May': values['May'], 'Jun': values['Jun'], 'Jul': values['Jul'], 'Aug': values['Aug'], 'Sep': values['Sep'], 'Oct': values['Oct'], 'Nov': values['Nov'], 'Dec': values['Dec'],
-                   'WeekStart': values['WeekStart'], 'WeekEnd': values['WeekEnd'], 'WeekPath': values['WeekPath'], 'Sun': values['Sun'], 'Mon': values['Mon'], 'Tue': values['Tue'], 'Wed': values['Wed'], 'Thu': values['Thur'], 'Fri': values['Fri'], 'Sat': values['Sat'],
-                   'Valentines Day': values['Valentines Day'], 'April Fools': values['April Fools'], 'July 4th': values['July 4th'], 'Mardi Gras': values['Mardi Gras'], 'Easter': values['Easter'], 'Halloween': values['Halloween'], 'Thanksgiving': values['Thanksgiving'], 'Christmas': values['Christmas'], 'Valentines Day Enabled': values['Valentines Day Enabled']
-                      , 'April Fools Enabled': values['April Fools Enabled'], 'July 4th Enabled': values['July 4th Enabled'], 'Mardi Gras Enabled': values['Mardi Gras Enabled'], 'Easter Enabled': values['Easter Enabled'], 'Halloween Enabled': values['Halloween Enabled'], 'Thanksgiving Enabled': values['Thanksgiving Enabled'], 'Christmas Enabled': values['Christmas Enabled'], 'Default': values['Default']
-                       , 'Start1': values['Start1'], 'Start2': values['Start2'], 'Start3': values['Start3'], 'Start4': values['Start4'], 'Start5': values['Start5'], 'Start6': values['Start6'], 'Start7': values['Start7'], 'Start8': values['Start8'], 'Start9': values['Start9'], 'Start10': values['Start10']
-                       , 'End1': values['Start1'], 'End2': values['End2'], 'End3': values['End3'], 'End4': values['End4'], 'End5': values['End5'], 'End6': values['End6'], 'End7': values['End7'], 'End8': values['End8'], 'End9': values['End9'], 'End10': values['End10']
-                       , 'Path1': values['Path1'], 'Path2': values['Path2'], 'Path3': values['Path3'], 'Path4': values['Path4'], 'Path5': values['Path5'], 'Path6': values['Path6'], 'Path7': values['Path7'], 'Path8': values['Path8'], 'Path9': values['Path9'], 'Path10': values['Path10']}, outfile)
+            json.dump({'URL': self.url.get_value(), 'Token': self.Token.get_value(), 'Freq': self.dropDown.get_value(), 'Jan': self.defaultJan.get_value(),
+                       'Feb': self.defaultFeb.get_value(), 'Mar': self.defaultMar.get_value(), 'Apr': self.defaultApr.get_value(), 'May': self.defaultMay.get_value(),
+                       'Jun': self.defaultJun.get_value(), 'Jul': self.defaultJul.get_value(), 'Aug': self.defaultAug.get_value(), 'Sep': self.defaultSep.get_value(),
+                       'Oct': self.defaultOct.get_value(), 'Nov': self.defaultNov.get_value(), 'Dec': self.defaultDec.get_value(),
+                       'WeekStart': self.weekstart.get_value(), 'WeekEnd': self.weekend.get_value(), 'WeekPath': self.WeekPath.get_value(),
+                       'Sun': self.Sun.get_value(), 'Mon': self.Mon.get_value(), 'Tue': self.Tue.get_value(), 'Wed': self.Wed.get_value(),
+                       'Thu': self.Thu.get_value(), 'Fri': self.Fri.get_value(), 'Sat': self.Sat.get_value(),
+                       'Valentines Day': self.Pathvday.get_value(), 'April Fools': self.Pathaprilday.get_value(),
+                       'July 4th': self.Path4th.get_value(), 'Mardi Gras': self.Pathmardigras.get_value(), 'Easter': self.Patheaster.get_value(),
+                       'Halloween': self.Pathhalloween.get_value(), 'Thanksgiving': self.PathThanksgiving.get_value(),
+                       'Christmas': self.PathChristmas.get_value(), 'Valentines Day Enabled': self.checkboxvday.get_value()
+                          , 'April Fools Enabled': self.checkboxaprilday.get_value(),
+                       'July 4th Enabled': self.checkbox4th.get_value(),
+                       'Mardi Gras Enabled': self.checkboxmardigras.get_value(), 'Easter Enabled': self.checkboxeaster.get_value(),
+                       'Halloween Enabled': self.checkboxhalloween.get_value(),
+                       'Thanksgiving Enabled': self.checkboxThanksgiving.get_value(),
+                       'Christmas Enabled': self.checkboxChristmas.get_value(), 'Default': self.default.get_value()
+                          , 'Start1': self.Start.get_value(), 'Start2': self.Start2.get_value(), 'Start3': self.Start3.get_value(),
+                       'Start4': self.Start4.get_value(), 'Start5': self.Start5.get_value(), 'Start6': self.Start6.get_value(),
+                       'Start7': self.Start7.get_value(), 'Start8': self.Start8.get_value(), 'Start9': self.Start9.get_value(),
+                       'Start10': self.Start10.get_value()
+                          , 'End1': self.End1.get_value(), 'End2': self.End2.get_value(), 'End3': self.End3.get_value(),
+                       'End4': self.End4.get_value(), 'End5': self.End5.get_value(), 'End6': self.End6.get_value(), 'End7': self.End7.get_value(),
+                       'End8': self.End8.get_value(), 'End9': self.End9.get_value(), 'End10': self.End10.get_value()
+                          , 'Path1': self.Path1.get_value(), 'Path2': self.Path2.get_value(), 'Path3': self.Path3.get_value(),
+                       'Path4': self.Path4.get_value(), 'Path5': self.Path5.get_value(), 'Path6': self.Path6.get_value(),
+                       'Path7': self.Path7.get_value(), 'Path8': self.Path8.get_value(), 'Path9': self.Path9.get_value(),
+                       'Path10': self.Path10.get_value()}, outfile)
         PrerollUpdate.update()
-        sg.popup('Your Pre-roll is updated!')
+        self.popup = gui.GenericDialog("Your server pre-roll is updated")
+        self.popup.show(self)
 
-    if event == 'Freq':
-        if values['Freq'] == ['Monthly']:
-            window['Month'].update(visible=True)
-            window['Week'].update(visible=False)
-            window['Day'].update(visible=False)
-            window['Holiday'].update(visible=False)
-            window['Custom'].update(visible=False)
-        elif values['Freq'] == ['Weekly']:
-            window['Month'].update(visible=False)
-            window['Week'].update(visible=True)
-            window['Day'].update(visible=False)
-            window['Holiday'].update(visible=False)
-            window['Custom'].update(visible=False)
-        elif values['Freq'] == ['Daily']:
-            window['Month'].update(visible=False)
-            window['Week'].update(visible=False)
-            window['Day'].update(visible=True)
-            window['Holiday'].update(visible=False)
-            window['Custom'].update(visible=False)
-        elif values['Freq'] == ['Holiday']:
-            window['Month'].update(visible=False)
-            window['Week'].update(visible=False)
-            window['Day'].update(visible=False)
-            window['Holiday'].update(visible=True)
-            window['Custom'].update(visible=False)
-        elif values['Freq'] == ['Custom']:
-            window['Month'].update(visible=False)
-            window['Week'].update(visible=False)
-            window['Day'].update(visible=False)
-            window['Holiday'].update(visible=False)
-            window['Custom'].update(visible=True)
-    if event == sg.WIN_CLOSED:
-        break
 
-window.close()
+
+
+if __name__ == "__main__":
+# starts the web server
+    start(Rollarr,address='0.0.0.0', port=3100, start_browser=True, multiple_instance=True)
