@@ -69,10 +69,14 @@ def update():
         session.verify = False
         requests.packages.urllib3.disable_warnings()
         plex = PlexServer(data['URL'], data['Token'], session, timeout=None)
+        print(Date)
+        print(data[Date])
         if data[Date] is None:
             Path = data['Default']
+            print(Path)
         else:
             Path = data[Date]
+            print(Path)
         prerolls = Path
         plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
         plex.settings.save()
