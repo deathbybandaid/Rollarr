@@ -18,7 +18,7 @@ For example you can have this setup to apply a standard Pre-roll during regular 
 
 ## Installation
 
-Simply install like any other docker
+Simply install like any other docker and expose the port 3100 and map the location of your pre-roll files
 
 ```
 docker pull thehumanrobot/rollarr:latest
@@ -32,8 +32,10 @@ docker pull thehumanrobot/rollarr:latest
 You will now point this at the PrerollUpdate.py script~~ This no longer required for the docker container since I have written some code to ensure the pre-roll is synced ever 60s
 
 ## Running For The First Time
+Connect to the IP of your docker system on port 3100
 
 The first time you run it you will see this:
+
 ![image](https://user-images.githubusercontent.com/75536101/147721323-21bbc717-bc79-424a-9a51-8e799861cca4.png)
 
 
