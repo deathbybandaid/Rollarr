@@ -36,7 +36,9 @@ Connect to the IP of your docker system on port 3100
 
 The first time you run it you will see this:
 
-![image](https://user-images.githubusercontent.com/75536101/147721323-21bbc717-bc79-424a-9a51-8e799861cca4.png)
+
+![image](https://user-images.githubusercontent.com/75536101/147721648-bbd89cc5-dfba-4736-9998-37e8473dbecb.png)
+
 
 
 Fill in all the fields for your plex IP and Token
@@ -49,19 +51,22 @@ To set specific pre-roll fuctions select which type you want (Monthly, Weekly, D
 ### *The path to the videos must be reachable by your Plex Server!*
 
 Monthly:
-![image](https://user-images.githubusercontent.com/75536101/146992956-baa1dd72-57e0-4aa2-bbdf-8cf4e75cd4be.png)
+![image](https://user-images.githubusercontent.com/75536101/147721694-24749a2f-e3ca-43e4-80b6-c858297064e7.png)
+
 
 Weekly:
-![image](https://user-images.githubusercontent.com/75536101/146993034-951f7bcc-6011-40a7-994b-1564cea961d1.png)
+![image](https://user-images.githubusercontent.com/75536101/147721730-9181aeca-8347-4b19-8e46-2484cea477e2.png)
 
 Daily:
-![image](https://user-images.githubusercontent.com/75536101/146993063-d1dc0964-233c-4e11-8099-d5e9555b1497.png)
+![image](https://user-images.githubusercontent.com/75536101/147721754-8ea2ed1e-1e07-4868-a91d-49b61de22ee2.png)
+
 
 Holiday (If you want another holiday you can add that by using the weekly function and setting a date) :
-![image](https://user-images.githubusercontent.com/75536101/146993137-a99e4e79-0e4f-4348-b72a-6ffa19a370cc.png)
+![image](https://user-images.githubusercontent.com/75536101/147721767-9f56834e-7330-4752-bde8-fad438c90573.png)
 
 Custom:
-![image](https://user-images.githubusercontent.com/75536101/147268244-abf0f6d2-2fe5-43bd-93ec-d69e982d7425.png)
+![image](https://user-images.githubusercontent.com/75536101/147721789-8569ff67-e4b6-4573-9f8e-576333f89416.png)
+
 
 ### Once you finish setting that up whatever you select in the Schedule section will be what the script will run on
 
