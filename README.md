@@ -10,10 +10,7 @@ You can specify if you would like your pre-roll updated monthly, weekly, daily, 
 For example you can have this setup to apply a standard Pre-roll during regular times of the year and then during holidays update the pre-roll automatically!
 
 ## Requirements
--[Python 3.7+](https://www.python.org/)
-(Probably works on a lower version haven't tested)
-
--[PlexAPI](https://github.com/pkkid/python-plexapi)
+Docker
 
 
 ## Installation
