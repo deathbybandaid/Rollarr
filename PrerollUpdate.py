@@ -209,3 +209,5 @@ def update():
             print('Pre-roll updated')
 # Closing file
     f.close()
+if __name__ == '__main__':
+    update()
