@@ -17,15 +17,16 @@ import shutil
 import pathlib
 from configparser import *
 
+
+
 def update():
-
-
-    f = open(str('data.json'))
+    os.chdir('/')
+    f = open(str('./data.json'))
 
     data = json.load(f)
+    print('pre-roll updated')
 
-
-    if data['Freq'][0] == 'Monthly':
+    if data['Freq'] == 'Monthly':
         Date = datetime.date.today()
         Date = Date.strftime("%b")
         session = requests.Session()
@@ -41,7 +42,7 @@ def update():
         plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
         plex.settings.save()
         print('Pre-roll updated')
-    if data['Freq'][0] == 'Weekly':
+    if data['Freq'] == 'Weekly':
         Date = datetime.date.today()
         Date = Date.strftime("%Y-%m-%d")
         if data['WeekStart'] <= Date <= data['WeekEnd']:
@@ -69,19 +70,15 @@ def update():
         session.verify = False
         requests.packages.urllib3.disable_warnings()
         plex = PlexServer(data['URL'], data['Token'], session, timeout=None)
-        print(Date)
-        print(data[Date])
         if data[Date] is None:
             Path = data['Default']
-            print(Path)
         else:
             Path = data[Date]
-            print(Path)
         prerolls = Path
         plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
         plex.settings.save()
         print('Pre-roll updated')
-    if data['Freq'][0] == 'Holiday':
+    if data['Freq'] == 'Holiday':
         Date = datetime.date.today()
         ThanksgivingDay = 22 + (10 - datetime.date(Date.year, 11, 1).weekday()) % 7
         # Valentines Day
@@ -118,7 +115,7 @@ def update():
         plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
         plex.settings.save()
         print('Pre-roll updated')
-    if data['Freq'][0] == 'Custom':
+    if data['Freq'] == 'Custom':
         Date = datetime.date.today()
         Date = Date.strftime("%Y-%m-%d")
         if data['Start1'] <= Date <= data['End1']:
@@ -213,3 +210,5 @@ def update():
             print('Pre-roll updated')
 # Closing file
     f.close()
+if __name__ == '__main__':
+    update()
