@@ -32,6 +32,7 @@ button_base64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAoCAYAAAA16
 
 
 class Rollarr(App):
+    os.chdir('/rollar/')
     if exists('data.json'):
         print('ready')
     else:
@@ -1124,8 +1125,4 @@ class Rollarr(App):
 
 if __name__ == "__main__":
     start(Rollarr,address='0.0.0.0', port=3100, start_browser=True, multiple_instance=True)
-
-
-
-
 
