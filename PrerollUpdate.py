@@ -20,7 +20,7 @@ from configparser import *
 
 
 def update():
-    os.chdir('/')
+    os.chdir('/rollar/')
     f = open(str('./data.json'))
 
     data = json.load(f)
