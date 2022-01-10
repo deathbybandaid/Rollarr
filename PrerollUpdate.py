@@ -20,11 +20,10 @@ from configparser import *
 
 
 def update():
-    os.chdir('/rollar/')
+    os.chdir('/rollarr/')
     f = open(str('./data.json'))
 
     data = json.load(f)
-    print('pre-roll updated')
 
     if data['Freq'] == 'Monthly':
         Date = datetime.date.today()
@@ -34,8 +33,9 @@ def update():
         requests.packages.urllib3.disable_warnings()
         plex = PlexServer(data['URL'], data['Token'], session, timeout=None)
         print(Date)
-        if data[Date] is None:
+        if (data[Date] is None or data[Date] == 'None'):
             Path = data['Default']
+            print(Path)
         else:
             Path = data[Date]
         prerolls = Path
@@ -63,17 +63,19 @@ def update():
             plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
             plex.settings.save()
             print('Pre-roll updated')
-    if data['Freq'][0] == 'Daily':
+    if data['Freq'] == 'Daily':
         Date = datetime.date.today()
         Date = Date.strftime("%a")
         session = requests.Session()
         session.verify = False
         requests.packages.urllib3.disable_warnings()
         plex = PlexServer(data['URL'], data['Token'], session, timeout=None)
-        if data[Date] is None:
+        if (data[Date] is None or data[Date] == 'None'):
             Path = data['Default']
+            print(Path)
         else:
             Path = data[Date]
+            print(Path)
         prerolls = Path
         plex.settings.get('cinemaTrailersPrerollID').set(prerolls)
         plex.settings.save()
