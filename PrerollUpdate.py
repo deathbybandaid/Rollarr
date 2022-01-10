@@ -1,20 +1,9 @@
 import json
-import PySimpleGUI as sg
-import yaml
-from urllib.parse import quote_plus, urlencode
 import datetime
-import re
 import requests
 from dateutil.easter import *
 from plexapi.server import PlexServer
-from plexapi import media, utils, settings, library
-from plexapi.base import Playable, PlexPartialObject
-from plexapi.exceptions import BadRequest, NotFound
-from argparse import ArgumentParser
 import os
-import random
-import shutil
-import pathlib
 from configparser import *
 
 

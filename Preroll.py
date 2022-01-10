@@ -2,25 +2,12 @@ import remi.gui as gui
 from remi import start, App
 import webbrowser
 from plexapi.server import PlexServer
-import re
 import requests
-import yaml
-from urllib.parse import quote_plus, urlencode
 import PrerollUpdate
 
-
-from plexapi import media, utils, settings, library
-from plexapi.base import Playable, PlexPartialObject
-from plexapi.exceptions import BadRequest, NotFound
-
-from argparse import ArgumentParser
 import os
 from os.path import exists
-import random
-import pathlib
 from configparser import *
-import pathlib
-import datetime
 import json
 
 import time
@@ -538,7 +525,7 @@ class Rollarr(App):
 
         # returning the root widget
         return self.app
-    
+
     def open_link(self, widget):
         webbrowser.open('https://www.buymeacoffee.com/thehumanrobot',0,True)
 
@@ -1139,8 +1126,3 @@ class Rollarr(App):
 
 if __name__ == "__main__":
     start(Rollarr,address='0.0.0.0', port=3100, start_browser=True, multiple_instance=True)
-
-
-
-
-
