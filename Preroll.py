@@ -16,7 +16,7 @@ button_base64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAoCAYAAAA16
 
 
 class Rollarr(App):
-    os.chdir('/rollarr/')
+    # os.chdir('/rollarr/')
     if exists('data.json'):
         print('ready')
     else:
