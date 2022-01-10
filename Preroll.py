@@ -32,7 +32,7 @@ button_base64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAoCAYAAAA16
 
 
 class Rollarr(App):
-    os.chdir('/rollar/')
+    os.chdir('/rollarr/')
     if exists('data.json'):
         print('ready')
     else:
@@ -116,6 +116,10 @@ class Rollarr(App):
         self.container.append(self.btFileDiag)
         self.container.append(self.default)
         self.container.append(gui.Label(" ", height=40))
+        self.Test = gui.Button('Test Connection', width=110, height=20)
+        self.Test.onclick.do(self.testconnection)
+        self.container.append(self.Test)
+        self.container.append(gui.Label(" ", height=20))
         self.save = gui.Button('Save', width=50, height=20)
         self.submit = gui.Button('Submit', width=50, height=20)
         self.submission.append(self.save)
@@ -1119,10 +1123,24 @@ class Rollarr(App):
         self.popup.show(self)
         PrerollUpdate.update()
 
-
-
+    def testconnection(self, widget):
+        session = requests.Session()
+        session.verify = False
+        requests.packages.urllib3.disable_warnings()
+        plex = PlexServer(self.url.get_value(), self.Token.get_value(), session, timeout=None)
+        print(plex.account())
+        self.popupconnected = gui.GenericDialog("Your sever is connected")
+        self.popupconnectedfail = gui.GenericDialog("Connection error please check logs")
+        if plex.account() != None:
+            self.popupconnected.show(self)
+        else:
+            self.popupconnectedfail.show(self)
 
 
 if __name__ == "__main__":
     start(Rollarr,address='0.0.0.0', port=3100, start_browser=True, multiple_instance=True)
+
+
+
+
 
