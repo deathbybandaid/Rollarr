@@ -4,13 +4,11 @@ import webbrowser
 from plexapi.server import PlexServer
 import requests
 import PrerollUpdate
-
 import os
 from os.path import exists
-from configparser import *
 import json
-
 import time
+
 starttime = time.time()
 
 
@@ -689,6 +687,7 @@ class Rollarr(App):
         # a list() of filenames and folders is returned
         self.WeekPath.set_value(';'.join(filelist))
 
+    """
     def open_fileselection_dialogPath(self, widget):
         self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',
                                                            True, '.', True, False)
@@ -700,6 +699,7 @@ class Rollarr(App):
     def on_fileselection_dialog_confirmPath(self, widget, filelist):
         # a list() of filenames and folders is returned
         self.WeekPath.set_value(';'.join(filelist))
+    """
 
     def open_fileselection_dialogPath1(self, widget):
         self.fileselectionDialog = gui.FileSelectionDialog('File Selection Dialog', 'Select files and folders',

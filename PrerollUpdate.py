@@ -1,10 +1,9 @@
 import json
 import datetime
 import requests
-from dateutil.easter import *
+from dateutil.easter import easter
 from plexapi.server import PlexServer
 import os
-from configparser import *
 
 
 def update():
